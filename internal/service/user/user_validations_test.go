@@ -24,7 +24,7 @@ func (s *MyUserValidationTestSuite) SetupTest() {
 	assert.NoError(s.T(), err)
 }
 
-// Validness tests the validity of user information including name, last name, and username.
+// Validation tests the username of the user.
 func (s *MyUserValidationTestSuite) Validness() {
 	testCases := []struct {
 		Name     string `validate:"required,min=3,max=40"`
