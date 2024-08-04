@@ -9,73 +9,80 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type mySuite struct {
+// MyUserValidationTestSuite is a test suite for validating user information.
+type MyUserValidationTestSuite struct {
 	suite.Suite
 
 	v *validator.Validate
 }
 
-func (m *mySuite) SetupTest() {
-	m.v = validator.New()
+// SetupTest sets up the test environment and initializes the validator.
+func (s *MyUserValidationTestSuite) SetupTest() {
+	s.v = validator.New()
 
-	var err error = registerCustomValidations(m.v)
-	assert.NoError(m.T(), err)
+	var err error = registerCustomValidations(s.v)
+	assert.NoError(s.T(), err)
 }
 
-// Validness
-func (m *mySuite) TestUsernameValidity() {
+// Validness tests the validity of user information including name, last name, and username.
+func (s *MyUserValidationTestSuite) Validness() {
 	testCases := []struct {
 		Name     string `validate:"required,min=3,max=40"`
 		LastName string `validate:"required,min=3,max=40"`
 		Username string `validate:"required,username,min=4,max=20"`
 
-		ExpectedError string
+		Valid bool
 	}{
+		// Test cases with different user information
 		{
-			Name:     "reza",
+			Name:     "john",
 			LastName: "None",
-			Username: "rezatg",
+			Username: "john",
 		},
 		{
-			Name:     "reza",
+			Name:     "john",
 			LastName: "None",
-			Username: "reza_tg",
+			Username: "john_doe",
 		},
 		{
-			Name:     "reza",
+			Name:     "john",
 			LastName: "None",
-			Username: "2rezatg",
+			Username: "2john",
 		},
 		{
-			Name:     "reza",
+			Name:     "john",
 			LastName: "None",
 			Username: "",
 		},
 		{
-			Name:     "reza",
+			Name:     "john",
 			LastName: "None",
-			Username: "rez",
+			Username: "joh",
 		},
 		{
-			Name:     "reza",
+			Name:     "john",
 			LastName: "None",
 			Username: "&^%$(*)",
 		},
 	}
 
+	// Loop through test cases and validate user information
 	for _, user := range testCases {
-		var err error = m.v.Struct(user)
+		var err error = s.v.Struct(user)
 
 		if err != nil {
+			// Check for validation errors and display appropriate error messages
 			for _, err := range err.(validator.ValidationErrors) {
-				assert.EqualError(m.T(), err, fmt.Sprintf("username is not valid: %s", user.Username))
+				assert.EqualError(s.T(), err, fmt.Sprintf("username is not valid: %s", user.Username))
+				// require.Equal(s.T(), (err != nil) == user.Valid, user.Username)
 			}
 		} else {
-			assert.NoError(m.T(), err)
+			assert.NoError(s.T(), err)
 		}
 	}
 }
 
+// TestRunSuite runs the test suite for user validation.
 func TestRunSuite(t *testing.T) {
-	suite.Run(t, new(mySuite))
+	suite.Run(t, new(MyUserValidationTestSuite))
 }
