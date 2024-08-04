@@ -27,6 +27,8 @@ func usernameValidation(fl validator.FieldLevel) bool {
 }
 
 // RegisterCustomValidations registers the custom validation functions
-// func registerCustomValidations(validate *validator.Validate) {
-// 	validate.RegisterValidation("username", usernameValidation)
-// }
+func registerCustomValidations(v *validator.Validate) error {
+	v.RegisterValidation("username", usernameValidation)
+
+	return nil
+}
